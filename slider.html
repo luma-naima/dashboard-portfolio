@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Animated Portfolio</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/CustomEase.min.js"></script>
+</head>
+<body>
+    <header style="background-color: #4CAF50; color: white; text-align: center; padding: 50px 0;">
+        <h1>Welcome to My Power BI Portfolio</h1>
+        <p>Showcasing my data visualization skills and projects</p>
+    </header>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#dashboards">Dashboards</a>
+        <a href="#about">About Me</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <section id="home">
+        <h2>Home</h2>
+        <p>Welcome to my Power BI portfolio. Here you will find my latest dashboards and projects.</p>
+    </section>
+    <section id="dashboards">
+        <h2>My Dashboards</h2>
+        <div class="slider">
+            <div class="card">
+                <h1>HR Analytics</h1>
+                <img src="images\hrAnalytics.png" />
+                
+            </div>
+            <div class="card">
+                <h1>Sales Analytics Dashboard</h1>
+                <img src="images\salesAnalytics2.png" />
+            </div>
+            <div class="card">
+                <h1>Excel Graph of Sales</h1>
+            <img src="images\TCOcalculator.png" />
+            </div>
+        </div>
+    </section>
+    <section id="about">
+        <h2>About Me</h2>
+        <p>Hi, I am luma ,  Power BI dashboard developer , here I am showing my capabilities !</p>
+    </section>
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>Email: lumanaima@hotmail.com</p>
+        <p>LinkedIn: I will share soon!!</p>
+    </section>
+    <footer>
+        <p>&copy; 2023 lumaNaima. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Define a custom cubic easing function
+        CustomEase.create("cubic", "0.83, 0, 0.17, 1");
+
+        // Variable to track whether an animation is currently in progress
+        let isAnimating = false;
+
+        // Function to split the text of elements into spans for each character
+        function splitTextIntoSpans(selector) {
+            let elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                let text = element.innerText;
+                let splitText = text
+                    .split("")
+                    .map(function(char) {
+                        return `<span>${char === " " ? "&nbsp;&nbsp;" : char}</span>`;
+                    })
+                    .join("");
+                element.innerHTML = splitText;
+            });
+        }
+
+        // Function to initialize the cards
+        function initializeCards() {
+            let cards = Array.from(document.querySelectorAll(".card"));
+            gsap.to(cards, {
+                y: i => -15 + 15 * i + "%",
+                z: i => 15 * i,
+                duration: 1,
+                ease: "cubic",
+                stagger: -0.1
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Split text into spans for h1 elements with class 'copy'
+            splitTextIntoSpans(".copy h1");
+            // Initialize the cards
+            initializeCards();
+
+            // Set initial position for span elements within h1
+            gsap.set("h1 span", { y: -200 });
+            gsap.set(".slider .card:last-child h1 span", { y: 0 });
+        });
+
+        // Event listener for click events
+        document.addEventListener("click", () => {
+            // If an animation is already in progress, return early
+            if (isAnimating) return;
+
+            // Set isAnimating to true to indicate animation is starting
+            isAnimating = true;
+            // Select the slider and its cards
+            let slider = document.querySelector(".slider");
+            let cards = Array.from(slider.querySelectorAll(".card"));
+            let lastCard = cards.pop(); // Remove the last card
+            let nextCard = cards[cards.length - 1]; // Get the next card
+
+            // Animate the last card to move downwards and fade out
+            gsap.to(lastCard.querySelectorAll("h1 span"), {
+                y: 200,
+                duration: 0.75,
+                ease: "cubic"
+            });
+
+            gsap.to(lastCard, {
+                y: "+=150%",
+                duration: 0.75,
+                ease: "cubic",
+                onComplete: () => {
+                    // When animation completes, prepend the last card to the slider
+                    slider.prepend(lastCard);
+                    // Reinitialize the cards
+                    initializeCards();
+                    // Reset the position of span elements within the last card
+                    gsap.set(lastCard.querySelectorAll("h1 span"), { y: -200 });
+
+                    // Set isAnimating to false after a delay
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 1000);
+                }
+            });
+
+            // Animate the next card to move upwards and fade in
+            gsap.to(nextCard.querySelectorAll("h1 span"), {
+                y: 0,
+                duration: 1,
+                ease: "cubic",
+                stagger: 0.05
+            });
+        });
+    </script>
+</body>
+</html>
